@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priority+ | Central Wings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fondo-principal: #050505;
+            --verde-cw: #2E4C3B;
+            --verde-brillo: #4A7A5E;
+            --texto-blanco: #F0F0F0;
+            --texto-gris: #A0A0A0;
+            --color-contorno: #FFFFFF; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        body {
+            background-color: var(--fondo-principal);
+            color: var(--texto-blanco);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            /* Evita que el fondo scrollee cuando el modal está abierto */
+            overflow-x: hidden; 
+        }
+
+        .contenedor-app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 20px; position: relative; }
+
+        .contorno-solido {
+            filter: drop-shadow(1px 0px 0px var(--color-contorno)) 
+                    drop-shadow(-1px 0px 0px var(--color-contorno)) 
+                    drop-shadow(0px 1px 0px var(--color-contorno)) 
+                    drop-shadow(0px -1px 0px var(--color-contorno));
+        }
+
+        /* --- SALUDO --- */
+        .saludo-vip { margin-top: 10px; text-align: center; }
+        .saludo-vip h1 { font-weight: 300; font-size: 22px; }
+        .saludo-vip span { font-weight: 800; color: var(--texto-blanco); }
+
+        /* =========================================
+           MOTOR 3D ESTRICTO (A PRUEBA DE SALTOS)
+        ========================================= */
+        .escena-3d {
+            width: 100%;
+            padding-bottom: 63.3%; 
+            position: relative;
+            perspective: 1200px;
+            margin-bottom: 10px;
+            animation: flotar 4s ease-in-out infinite;
+        }
+
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .tarjeta-3d {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .tarjeta-3d.girada {
+            transform: rotateY(180deg);
+        }
+
+        .cara-tarjeta {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            background: linear-gradient(135deg, #1e1e1e 0%, #121212 40%, #181818 60%, #0a0a0a 100%);
+            border-radius: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.9);
+            border-right: 1px solid rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05), 0 20px 40px rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+        }
+
+        /* =========================================
+           CARA FRENTE
+        ========================================= */
+        .frente::after {
+            content: ''; position: absolute; top: 0; left: -150%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: reflejo-luz 4s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes reflejo-luz {
+            0% { left: -150%; }
+            50% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .frente-top-left {
+            position: absolute;
+            top: 20px; left: 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        
+        .frente-top-left img { max-width: 140px; height: auto; }
+        
+        .frente-top-left .texto-grabado {
+            font-size: 8px; font-weight: 700; letter-spacing: 2px;
+            color: #777; 
+            text-shadow: -1px -1px 1px #000, 1px 1px 1px #222;
+            text-transform: uppercase;
+        }
+        .frente-top-left .texto-grabado.altacia { font-size: 10px; margin-top: 2px; color: var(--verde-brillo); }
+
+        .frente-centro {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .frente-centro img { width: 160px; height: auto; }
+
+        .frente-bottom-right {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            font-size: 12px; font-weight: 800; letter-spacing: 2px;
+            color: #4A7A5E;
+            text-shadow: -1px -1px 1px #000, 1px 1px 1px #222;
+        }
+
+        /* =========================================
+           CARA DORSO (EL DASHBOARD)
+        ========================================= */
+        .dorso {
+            transform: rotateY(180deg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dorso::before {
+            content: ''; position: absolute; top: -50px; right: -50px;
+            width: 100px; height: 100px; background: var(--verde-cw);
+            filter: blur(60px); opacity: 0.4; pointer-events: none;
+        }
+
+        .estadisticas-container {
+            display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;
+        }
+
+        .dato-principal { display: flex; flex-direction: column; }
+        .dato-principal span.titulo { font-size: 11px; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; font-weight: 700; }
+        .dato-principal span.valor { font-size: 38px; font-weight: 800; text-shadow: 0 5px 15px rgba(0, 0, 0, 0.8); line-height: 1; }
+
+        .graficas-visitas { display: flex; gap: 15px; }
+        .grafica-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .grafica-titulo { font-size: 8px; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        
+        .donut-chart {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: conic-gradient(var(--verde-brillo) var(--porcentaje), #121212 0);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 2px 4px rgba(0,0,0,0.9);
+        }
+        
+        .donut-hole {
+            width: 38px; height: 38px; border-radius: 50%; background-color: #151515;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.6), 0 1px 1px rgba(255,255,255,0.05);
+        }
+        .donut-hole span { font-size: 14px; font-weight: 800; color: var(--texto-blanco); }
+
+        .contenedor-botones {
+            display: flex; gap: 10px; width: 100%; position: relative; z-index: 2;
+        }
+
+        .btn-accion {
+            flex: 1; 
+            background: linear-gradient(to bottom, #1a1a1a, #111111);
+            color: var(--texto-blanco);
+            border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid #050505;
+            padding: 10px 5px; border-radius: 12px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-align: center;
+        }
+        .btn-accion:hover { background: var(--verde-cw); border-color: var(--verde-brillo); }
+        .btn-accion img { width: 18px; height: 18px; }
+
+        /* --- HISTORIAL DE VISITAS --- */
+        .historial { margin-top: 5px; }
+        .historial h3 { font-size: 12px; color: var(--texto-gris); margin-bottom: 15px; letter-spacing: 1px; text-align: center; }
+        
+        .item-historial { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; background-color: #0f0f0f; border-radius: 12px; margin-bottom: 8px; 
+            border: 1px solid rgba(255, 255, 255, 0.03); 
+        }
+        .item-izq span.fecha { display: block; font-size: 13px; font-weight: 700; margin-bottom: 2px;}
+        .item-izq span.sucursal { font-size: 11px; color: var(--texto-gris); }
+        .item-der { color: var(--verde-brillo); font-size: 16px; font-weight: 800; }
+
+
+        /* =========================================
+           VENTANAS MODALES PREMIUM
+        ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px); /* Efecto cristal desenfocado */
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            width: 90%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #181818 0%, #0a0a0a 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            padding: 25px;
+            transform: translateY(30px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.activo .modal-box {
+            transform: translateY(0);
+        }
+
+        .btn-cerrar {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--texto-gris);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .btn-cerrar:hover { color: var(--texto-blanco); }
+
+        .modal-titulo {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--texto-blanco);
+        }
+        
+        .modal-titulo img { width: 18px; height: 18px; }
+
+        /* Lista de items premium */
+        .lista-premium { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+        
+        .lista-premium li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .icono-lista { color: var(--verde-brillo); font-weight: 800; font-size: 14px; margin-top: 2px; }
+        
+        .texto-lista { display: flex; flex-direction: column; gap: 4px; }
+        .texto-lista strong { font-size: 13px; color: var(--texto-blanco); }
+        .texto-lista span { font-size: 11px; color: var(--texto-gris); line-height: 1.4; }
+
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-app">
+        
+        <div class="saludo-vip">
+            <h1>Qué onda, <span>Alejandro</span></h1>
+            <p style="font-size: 12px; color: #888; margin-top: 5px;">Toca tu tarjeta para ver tus datos</p>
+        </div>
+
+        <div class="escena-3d">
+            <div class="tarjeta-3d" id="tarjetaPriority">
+                
+                <!-- CARA FRENTE -->
+                <div class="cara-tarjeta frente">
+                    <div class="frente-top-left">
+                        <img src="CW_VDEOSC_HORIZONTAL.png" alt="Central Wings" class="contorno-solido">
+                        <span class="texto-grabado altacia">— ALTACIA —</span>
+                        <span class="texto-grabado">MASTER EN ALITAS</span>
+                    </div>
+                    <div class="frente-centro">
+                        <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Estrella" class="contorno-solido">
+                    </div>
+                    <div class="frente-bottom-right">PRIORITY+</div>
+                </div>
+
+                <!-- CARA DORSO -->
+                <div class="cara-tarjeta dorso">
+                    <div class="estadisticas-container">
+                        <div class="dato-principal">
+                            <span class="titulo">Visitas Totales</span>
+                            <span class="valor">12</span>
+                        </div>
+                        <div class="graficas-visitas">
+                            <div class="grafica-item">
+                                <div class="donut-chart mes" style="--porcentaje: 75%;">
+                                    <div class="donut-hole"><span>3</span></div>
+                                </div>
+                                <span class="grafica-titulo">Mes</span>
+                            </div>
+                            <div class="grafica-item">
+                                <div class="donut-chart total" style="--porcentaje: 100%;">
+                                    <div class="donut-hole"><span>12</span></div>
+                                </div>
+                                <span class="grafica-titulo">Total</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contenedor-botones">
+                        <!-- Botón Beneficios llama a la función abrirModal() -->
+                        <button class="btn-accion" onclick="event.stopPropagation(); abrirModal('modalBeneficios');">
+                            <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Beneficios" class="contorno-solido">
+                            BENEFICIOS
+                        </button>
+                        <!-- Botón Menú Secreto llama a la función abrirModal() -->
+                        <button class="btn-accion" onclick="event.stopPropagation(); abrirModal('modalMenu');">
+                            <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Menú Secreto" class="contorno-solido">
+                            MENÚ SECRETO
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="historial">
+            <h3>HISTORIAL DE ASISTENCIA</h3>
+            
+            <div class="item-historial">
+                <div class="item-izq"><span class="fecha">Ayer • 8:30 PM</span><span class="sucursal">Sucursal Altacia</span></div>
+                <div class="item-der">✓</div>
+            </div>
+            <div class="item-historial">
+                <div class="item-izq"><span class="fecha">12 Oct 2026 • 9:15 PM</span><span class="sucursal">Sucursal Altacia</span></div>
+                <div class="item-der">✓</div>
+            </div>
+            <div class="item-historial">
+                <div class="item-izq"><span class="fecha">28 Sep 2026 • 7:00 PM</span><span class="sucursal">Sucursal Altacia</span></div>
+                <div class="item-der">✓</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         VENTANAS MODALES
+    ========================================= -->
+
+    <!-- MODAL DE BENEFICIOS -->
+    <div class="modal-overlay" id="modalBeneficios" onclick="cerrarModal('modalBeneficios')">
+        <div class="modal-box" onclick="event.stopPropagation();">
+            <button class="btn-cerrar" onclick="cerrarModal('modalBeneficios')">×</button>
+            <h2 class="modal-titulo">
+                <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Estrella" class="contorno-solido"> 
+                BENEFICIOS PRIORITY+
+            </h2>
+            <ul class="lista-premium">
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Acceso PRIORITY+ sin fila</strong>
+                        <span>Pasa directo, tu tiempo es valioso.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Mesa reservada en eventos</strong>
+                        <span>Asegura tu mejor vista para el Fut Fest y finales deportivas.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Especial de Cumpleaños</strong>
+                        <span>Promoción exclusiva válida durante todo el mes de tu cumpleaños.</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MODAL DE MENÚ SECRETO -->
+    <div class="modal-overlay" id="modalMenu" onclick="cerrarModal('modalMenu')">
+        <div class="modal-box" onclick="event.stopPropagation();">
+            <button class="btn-cerrar" onclick="cerrarModal('modalMenu')">×</button>
+            <h2 class="modal-titulo">
+                <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Estrella" class="contorno-solido"> 
+                MENÚ SECRETO
+            </h2>
+            <ul class="lista-premium">
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Aderezos extras SIN COSTO</strong>
+                        <span>Aplica en todos tus pedidos COME TODO.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Lunch Time $199</strong>
+                        <span>Válido todos los Lunes y Martes.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Cócteles 2x1 (Miér. y Jue.)</strong>
+                        <span>Selección especial a cargo de Michell, jefa de barra.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="icono-lista">✓</span>
+                    <div class="texto-lista">
+                        <strong>Postre Free</strong>
+                        <span>Empieza el fin de semana con algo dulce todos los Viernes.</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- SCRIPT CORREGIDO SIN BRINCOS Y CON MODALES -->
+    <script>
+        // Lógica de la Tarjeta 3D
+        const tarjeta = document.getElementById('tarjetaPriority');
+        let yaSeVolteo = false;
+
+        tarjeta.addEventListener('click', () => {
+            if (!yaSeVolteo) {
+                if (navigator.vibrate) { navigator.vibrate(50); }
+                tarjeta.classList.add('girada');
+                yaSeVolteo = true;
+            }
+        });
+
+        // Lógica de los Modales
+        function abrirModal(id) {
+            document.getElementById(id).classList.add('activo');
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('activo');
+        }
+    </script>
+</body>
+</html>
