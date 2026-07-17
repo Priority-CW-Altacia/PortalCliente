@@ -30,10 +30,10 @@
         .contenedor-app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 20px; position: relative; }
 
         .contorno-solido {
-            filter: drop-shadow(1px 0px 0px var(--color-contorno)) 
-                    drop-shadow(-1px 0px 0px var(--color-contorno)) 
-                    drop-shadow(0px 1px 0px var(--color-contorno)) 
-                    drop-shadow(0px -1px 0px var(--color-contorno));
+            filter: drop-shadow(0.3px 0px 0px var(--color-contorno)) 
+                    drop-shadow(-0.3px 0px 0px var(--color-contorno)) 
+                    drop-shadow(0px 0.3px 0px var(--color-contorno)) 
+                    drop-shadow(0px -0.3px 0px var(--color-contorno));
         }
 
         /* --- SALUDO --- */
@@ -358,7 +358,7 @@
 
                     // --- MAGIA 3: EL HISTORIAL AUTOMÁTICO ---
                     const contenedorHistorial = document.querySelector('.historial');
-                    contenedorHistorial.innerHTML = '<h3>HISTORIAL DE VISITAS</h3>'; 
+                    contenedorHistorial.innerHTML = '<h3>HISTORIAL DE ÚLTINAS 3 VISITAS</h3>'; 
                     
                     if (respuesta.historial && respuesta.historial.length > 0) {
                         respuesta.historial.forEach(visita => {
