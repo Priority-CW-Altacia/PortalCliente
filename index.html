@@ -162,7 +162,7 @@
     <div class="contenedor-app">
         
         <div class="saludo-vip">
-            <h1>Qué onda, <span id="nombre-cliente">Cargando...</span></h1>
+            <h1>BIENVENIDO, <span id="nombre-cliente">Cargando...</span></h1>
             <p id="mensaje-estado" style="font-size: 12px; color: #888; margin-top: 5px;">Toca tu tarjeta para ver tus datos</p>
         </div>
 
@@ -173,7 +173,7 @@
                     <div class="frente-top-left">
                         <img src="CW_VDEOSC_HORIZONTAL.png" alt="Central Wings" class="contorno-solido">
                         <span class="texto-grabado altacia">— ALTACIA —</span>
-                        <span class="texto-grabado">MASTER EN ALITAS</span>
+                        <span class="texto-grabado">MÁSTER EN ALITAS</span>
                     </div>
                     <div class="frente-centro">
                         <img src="ICON_ESTRELLACW_VDEOSC.png" alt="Estrella" class="contorno-solido">
@@ -218,16 +218,7 @@
         </div>
 
         <div class="historial">
-            <h3>HISTORIAL DE ASISTENCIA</h3>
-            
-            <div class="item-historial">
-                <div class="item-izq">
-                    <!-- AQUI SE INYECTA LA ÚLTIMA FECHA REAL Y QUITAMOS EL DATO FALSO -->
-                    <span class="fecha" id="fecha-visita">Buscando...</span>
-                    <span class="sucursal">Sucursal Altacia</span>
-                </div>
-                <div class="item-der">✓</div>
-            </div>
+            <!-- La lista de historial se inyectará aquí automáticamente con JavaScript -->
         </div>
     </div>
 
@@ -251,7 +242,7 @@
                     <span class="icono-lista">✓</span>
                     <div class="texto-lista">
                         <strong>Mesa reservada en eventos</strong>
-                        <span>Asegura tu mejor vista para el Fut Fest y finales deportivas.</span>
+                        <span>Asegura tu mejor vista para eventos deportivos especiales.</span>
                     </div>
                 </li>
                 <li>
@@ -278,7 +269,7 @@
                     <span class="icono-lista">✓</span>
                     <div class="texto-lista">
                         <strong>Aderezos extras SIN COSTO</strong>
-                        <span>Aplica en todos tus pedidos COME TODO.</span>
+                        <span>Aplica en tu COME TODO.</span>
                     </div>
                 </li>
                 <li>
@@ -291,8 +282,8 @@
                 <li>
                     <span class="icono-lista">✓</span>
                     <div class="texto-lista">
-                        <strong>Cócteles 2x1 (Miér. y Jue.)</strong>
-                        <span>Selección especial a cargo de Michell, jefa de barra.</span>
+                        <strong>Cócteles 2x1 (Mié y Jue)</strong>
+                        <span>Selección especial a cargo de la jefa de barra.</span>
                     </div>
                 </li>
                 <li>
@@ -308,7 +299,7 @@
 
 
     <!-- =========================================
-         SCRIPT MAESTRO: UI + CONEXIÓN A GOOGLE
+         SCRIPT MAESTRO: UI + CONEXIÓN A GOOGLE ACTUALIZADO
     ========================================= -->
     <script>
         // 1. Lógica de la Tarjeta 3D y Modales
@@ -322,7 +313,7 @@
             if (!yaSeVolteo) {
                 if (navigator.vibrate) { navigator.vibrate(50); }
                 tarjeta.classList.add('girada');
-                msjEstado.style.opacity = '0'; // Desaparece el texto suavemente
+                msjEstado.style.opacity = '0';
                 yaSeVolteo = true;
             }
         });
@@ -333,6 +324,7 @@
         // 2. Lógica de Conexión a la Base de Datos
         const parametrosURL = new URLSearchParams(window.location.search);
         const idTarjeta = parametrosURL.get('id');
+        // Tu URL original, no le muevas nada
         const urlGoogle = "https://script.google.com/macros/s/AKfycby73P_UAi6m-Be9nw3MKWRXMVM6JflxOnOXIv4kt0v0oWTiCIZJ5Ets-2mf_lbzFwYuLw/exec";
 
         async function cargarDatosCliente() {
@@ -348,19 +340,51 @@
                 const respuesta = await peticion.json();
 
                 if (respuesta.encontrado) {
-                    // Actualizar nombre y visitas (número grande)
+                    // Datos principales
                     document.getElementById("nombre-cliente").innerText = respuesta.nombre;
                     document.getElementById("contador-visitas").innerText = respuesta.visitas;
                     
-                    // Actualizar la dona Total (centro y relleno)
+                    // --- MAGIA 1: LA DONA TOTAL ---
                     document.getElementById("contador-dona-total").innerText = respuesta.visitas;
-                    let porcentajeDona = Math.min(respuesta.visitas * 10, 100); 
-                    document.getElementById("dona-total").style.setProperty('--porcentaje', porcentajeDona + '%');
+                    let porcentajeTotal = Math.min(respuesta.visitas * 10, 100); 
+                    document.getElementById("dona-total").style.setProperty('--porcentaje', porcentajeTotal + '%');
 
-                    // Actualizar la fecha del historial
-                    const fechaObj = new Date(respuesta.ultima_visita);
-                    const opcionesFecha = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' };
-                    document.getElementById("fecha-visita").innerText = fechaObj.toLocaleDateString('es-MX', opcionesFecha);
+                    // --- MAGIA 2: LA DONA DEL MES ---
+                    // Ahora sí leemos 'visitas_mes' que nos mandará Google
+                    document.getElementById("contador-dona-mes").innerText = respuesta.visitas_mes || 0;
+                    // Supongamos que 4 visitas al mes llena la dona al 100% (25% cada visita)
+                    let porcentajeMes = Math.min((respuesta.visitas_mes || 0) * 25, 100); 
+                    document.getElementById("dona-mes").style.setProperty('--porcentaje', porcentajeMes + '%');
+
+                    // --- MAGIA 3: EL HISTORIAL AUTOMÁTICO ---
+                    const contenedorHistorial = document.querySelector('.historial');
+                    contenedorHistorial.innerHTML = '<h3>HISTORIAL DE VISITAS</h3>'; 
+                    
+                    if (respuesta.historial && respuesta.historial.length > 0) {
+                        respuesta.historial.forEach(visita => {
+                            const fechaObj = new Date(visita.fecha);
+                            const opcionesFecha = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+                            const fechaLimpia = fechaObj.toLocaleDateString('es-MX', opcionesFecha);
+                            
+                            contenedorHistorial.innerHTML += `
+                                <div class="item-historial">
+                                    <div class="item-izq">
+                                        <span class="fecha">${fechaLimpia}</span>
+                                        <span class="sucursal">${visita.sucursal}</span>
+                                    </div>
+                                    <div class="item-der">✓</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        contenedorHistorial.innerHTML += `
+                                <div class="item-historial">
+                                    <div class="item-izq">
+                                        <span class="fecha">Aún no hay visitas registradas</span>
+                                    </div>
+                                </div>
+                            `;
+                    }
                     
                 } else {
                     document.getElementById("nombre-cliente").innerText = "Nuevo PRIORITY+";
@@ -374,7 +398,6 @@
             }
         }
 
-        // Arrancamos el motor al instante
         cargarDatosCliente();
     </script>
 </body>
