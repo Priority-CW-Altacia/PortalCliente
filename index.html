@@ -162,7 +162,6 @@
     <div class="contenedor-app">
         
         <div class="saludo-vip">
-            <!-- AQUI SE INYECTA EL NOMBRE -->
             <h1>Qué onda, <span id="nombre-cliente">Cargando...</span></h1>
             <p id="mensaje-estado" style="font-size: 12px; color: #888; margin-top: 5px;">Toca tu tarjeta para ver tus datos</p>
         </div>
@@ -186,19 +185,17 @@
                     <div class="estadisticas-container">
                         <div class="dato-principal">
                             <span class="titulo">Visitas Totales</span>
-                            <!-- AQUI SE INYECTAN LAS VISITAS EN GRANDE -->
                             <span class="valor" id="contador-visitas">-</span>
                         </div>
                         <div class="graficas-visitas">
                             <div class="grafica-item">
-                                <!-- La dona del mes la dejamos fija por ahora, o la puedes ligar después -->
-                                <div class="donut-chart mes" style="--porcentaje: 0%;">
-                                    <div class="donut-hole"><span>-</span></div>
+                                <!-- DONA DEL MES YA CON SUS IDs PREPARADOS -->
+                                <div class="donut-chart mes" id="dona-mes" style="--porcentaje: 0%;">
+                                    <div class="donut-hole"><span id="contador-dona-mes">-</span></div>
                                 </div>
                                 <span class="grafica-titulo">Mes</span>
                             </div>
                             <div class="grafica-item">
-                                <!-- AQUI SE INYECTA LA DONA TOTAL Y SE CALCULA SU PORCENTAJE -->
                                 <div class="donut-chart total" id="dona-total" style="--porcentaje: 0%;">
                                     <div class="donut-hole"><span id="contador-dona-total">-</span></div>
                                 </div>
@@ -225,22 +222,16 @@
             
             <div class="item-historial">
                 <div class="item-izq">
-                    <!-- AQUI SE INYECTA LA ÚLTIMA FECHA REAL -->
+                    <!-- AQUI SE INYECTA LA ÚLTIMA FECHA REAL Y QUITAMOS EL DATO FALSO -->
                     <span class="fecha" id="fecha-visita">Buscando...</span>
                     <span class="sucursal">Sucursal Altacia</span>
                 </div>
                 <div class="item-der">✓</div>
             </div>
-            
-            <!-- Estos los dejé de relleno para que tu diseño no se vea pelón, luego podemos meter el historial completo -->
-            <div class="item-historial">
-                <div class="item-izq"><span class="fecha">Visitas Anteriores...</span><span class="sucursal">Central Wings</span></div>
-                <div class="item-der">✓</div>
-            </div>
         </div>
     </div>
 
-    <!-- MODAL DE BENEFICIOS (Sin cambios, está perfecto) -->
+    <!-- MODAL DE BENEFICIOS -->
     <div class="modal-overlay" id="modalBeneficios" onclick="cerrarModal('modalBeneficios')">
         <div class="modal-box" onclick="event.stopPropagation();">
             <button class="btn-cerrar" onclick="cerrarModal('modalBeneficios')">×</button>
@@ -274,7 +265,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE MENÚ SECRETO (Sin cambios) -->
+    <!-- MODAL DE MENÚ SECRETO -->
     <div class="modal-overlay" id="modalMenu" onclick="cerrarModal('modalMenu')">
         <div class="modal-box" onclick="event.stopPropagation();">
             <button class="btn-cerrar" onclick="cerrarModal('modalMenu')">×</button>
@@ -322,12 +313,16 @@
     <script>
         // 1. Lógica de la Tarjeta 3D y Modales
         const tarjeta = document.getElementById('tarjetaPriority');
+        const msjEstado = document.getElementById('mensaje-estado');
         let yaSeVolteo = false;
+
+        msjEstado.style.transition = 'opacity 0.3s ease';
 
         tarjeta.addEventListener('click', () => {
             if (!yaSeVolteo) {
                 if (navigator.vibrate) { navigator.vibrate(50); }
                 tarjeta.classList.add('girada');
+                msjEstado.style.opacity = '0'; // Desaparece el texto suavemente
                 yaSeVolteo = true;
             }
         });
@@ -359,7 +354,6 @@
                     
                     // Actualizar la dona Total (centro y relleno)
                     document.getElementById("contador-dona-total").innerText = respuesta.visitas;
-                    // Hice que cada visita llene un 10% de la dona, topado al 100%
                     let porcentajeDona = Math.min(respuesta.visitas * 10, 100); 
                     document.getElementById("dona-total").style.setProperty('--porcentaje', porcentajeDona + '%');
 
@@ -371,7 +365,7 @@
                 } else {
                     document.getElementById("nombre-cliente").innerText = "Nuevo PRIORITY+";
                     document.getElementById("mensaje-estado").innerText = "Tarjeta en blanco. Pásala por caja para activarla.";
-                    document.getElementById("mensaje-estado").style.color = "#4A7A5E"; // Tu verde chido
+                    document.getElementById("mensaje-estado").style.color = "#4A7A5E";
                 }
             } catch (error) {
                 console.error("Error al conectar:", error);
